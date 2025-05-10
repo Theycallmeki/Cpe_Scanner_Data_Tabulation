@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snack Info</title>
+</head>
+<body>
+  <h1>Snack Information</h1>
+
+  <!-- Add Snack Form -->
+  <form action="/snacks" method="POST">
+    <input type="text" name="snack" placeholder="Enter Snack Name" required>
+    <button type="submit">Add Snack</button>
+  </form>
+
+  <h2>Snack List</h2>
+  <ul>
+    <% snacks.forEach(snack => { %>
+      <li>
+        <%= snack.snack %> 
+        <form action="/snacks/<%= snack.id %>/delete" method="POST" style="display:inline;">
+          <button type="submit">Delete</button>
+        </form>
+        <form action="/snacks/<%= snack.id %>/edit" method="POST" style="display:inline;">
+          <input type="text" name="newSnack" placeholder="New Name" required>
+          <button type="submit">Update</button>
+
+          
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<h1>Admin Panel</h1>
+<h2>Snack Data</h2>
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+  <!-- Snack Data Table -->
+  <div style="flex: 0 1 auto; width: 50%;">  <!-- Added width to prevent it from growing -->
+    <table border="1" style="width: 100%;">  <!-- Make sure the table is not wider than the div -->
+      <tr>
+        <th>ID</th>
+        <th>Snack</th>
+      </tr>
+      <% snacks.forEach(snack => { %>
+        <tr>
+          <td><%= snack.id %></td>
+          <td><%= snack.snack %></td>
+        </tr>
+      <% }); %>
+    </table>
+  </div>
+
+  <!-- Snack Frequency Chart -->
+  <div style="flex: 0 0 auto; margin-left: 20px; width: 40%;">  <!-- Set width to make it fit -->
+    <h2>Snack Frequency Chart</h2>
+    <canvas id="snackChart"></canvas>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('snackChart').getContext('2d');
+
+  const snackNames = <%- JSON.stringify(snackNames) %>;
+  const snackFrequencies = <%- JSON.stringify(snackFrequencies) %>;
+
+  const totalFrequency = snackFrequencies.reduce((acc, freq) => acc + freq, 0);
+
+  const snackPercentages = snackFrequencies.map(freq => ((freq / totalFrequency) * 100).toFixed(2));
+
+  const snackChart = new Chart(ctx, {
+    type: 'doughnut', // Use doughnut chart to show percentages
+    data: {
+      labels: snackNames, // Labels are snack names
+      datasets: [{
+        label: 'Snack Frequency',
+        data: snackFrequencies, // Frequencies are the values
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)',
+          'rgba(255, 159, 64, 0.6)',
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 205, 86, 0.6)',
+        ], // Different colors for each segment
+        borderColor: [
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 205, 86, 1)',
+        ], // Same border color as background
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(tooltipItem) {
+              const label = tooltipItem.label || '';
+              const percentage = snackPercentages[tooltipItem.dataIndex];
+              const count = tooltipItem.raw;
+              return `${label}: ${count} (${percentage}%)`;
+            }
+          }
+        },
+        legend: {
+          position: 'top',
+        }
+      }
+    }
+  });
+</script>
+
+<style>
+  /* Make the chart small using CSS */
+  #snackChart {
+    width: 300px !important;  /* Adjust width */
+    height: 300px !important; /* Adjust height */
+  }
+
+  /* Optional: Adjust table style for better spacing */
+  table {
+    width: 100%;
+    margin-right: 20px;
+  }
+</style>
